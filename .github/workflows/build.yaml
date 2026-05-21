@@ -1,4 +1,4 @@
-name: Build Wheel
+name: Build And Test Wheel
 
 on:
   push:
@@ -73,3 +73,45 @@ jobs:
         if: github.ref_type == 'tag'
         with:
           files: dist/*.whl
+  test:
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.11"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wheel-dist
+          path: ${{ runner.temp }}/wheel-dist
+      - name: Install and test wheel in an isolated project
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 1. 查找构建好的 wheel 文件
+          WHEEL=$(find "${{ runner.temp }}/wheel-dist" -name '*.whl' -print -quit)
+          if [[ -z "$WHEEL" ]]; then
+            echo "No wheel artifact found!"
+            exit 1
+          fi
+          # 2. 在临时目录下新建一个纯净的隔离项目 (不包含 src 代码结构)
+          # 显式指定 python 版本确保与 matrix 一致
+          TEST_PROJECT="${{ runner.temp }}/test-project"
+          uv init --no-package --python "${{ matrix.python-version }}" "$TEST_PROJECT"
+          cd "$TEST_PROJECT"
+          # 3. 将 wheel 连同你需要测试的 extras (dev 和 test) 作为依赖添加到空项目中
+          # uv add 会自动搞定 .venv 创建、解析 wheel metadata 以及下载相关依赖
+          uv add "${WHEEL}[test]"
+          # 4. 在这个隔离项目的上下文中执行测试，测试用例指向工作区目录
+          uv run pytest "${{ github.workspace }}/src/tests"

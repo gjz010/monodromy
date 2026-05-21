@@ -10,7 +10,7 @@ authors = [{ name = "Eric Peterson", email = "Eric.Peterson@ibm.com" }]
 
 requires-python = ">=3.9"
 
-dependencies = ["pytest", "scipy", "qiskit", "retworkx", "numpy", "cvxopt"]
+dependencies = ["scipy", "qiskit", "retworkx", "numpy", "cvxopt"]
 
 classifiers = ["Private :: Do Not Upload"]
 

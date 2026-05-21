@@ -1522,8 +1522,6 @@ source = { editable = "." }
 dependencies = [
     { name = "cvxopt" },
     { name = "numpy" },
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "pytest", version = "9.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "qiskit" },
     { name = "retworkx" },
     { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -1577,7 +1575,6 @@ requires-dist = [
     { name = "py-bobyqa", marker = "extra == 'dev'" },
     { name = "pydocstyle", marker = "extra == 'format'" },
     { name = "pylatexenc", marker = "extra == 'dev'" },
-    { name = "pytest" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "qiskit" },
     { name = "retworkx" },

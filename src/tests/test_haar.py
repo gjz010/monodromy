@@ -22,7 +22,9 @@ class TestMonodromyHaar(unittest.TestCase):
 
     def test_alcove_haar_volume(self):
         """Check that the alcove has unit Haar volume."""
-        self.assertEqual(1.0, haar_volume(positive_canonical_alcove_c2))
+        self.assertAlmostEqual(
+            1.0, haar_volume(positive_canonical_alcove_c2), delta=epsilon
+        )
 
     def test_expected_interaction_strength(self):
         """Check that the Haar-random expected interaction strength is 3/2."""
