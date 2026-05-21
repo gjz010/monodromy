@@ -16,6 +16,12 @@ stdenv.mkDerivation {
   buildInputs = [ gmp ];
 
   patches = [ ./071b.patch ];
+  postPatch =  ''
+    # 移除 Apple Clang 不支持的 -static-libgcc 标志
+    substituteInPlace makefile \
+      --replace-fail "-static-libgcc" ""
+  '';
+  NIX_CFLAGS_COMPILE = lib.optionalString stdenv.hostPlatform.isDarwin "-fgnu89-inline";
   makeFlags = [
     "prefix=${placeholder "out"}"
     "CC:=$(CC)"
@@ -33,7 +39,7 @@ stdenv.mkDerivation {
     description = "Implementation of the reverse search algorithm for vertex enumeration/convex hull problems";
     license = lib.licenses.gpl2;
     maintainers = [ lib.maintainers.raskin ];
-    platforms = with lib.platforms; (linux ++ windows);
+    platforms = with lib.platforms; (linux ++ windows ++ darwin);
     homepage = "http://cgm.cs.mcgill.ca/~avis/C/lrs.html";
   };
 }

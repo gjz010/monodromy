@@ -67,8 +67,8 @@ index 32e6b52..8b7d89b 100644
 +# INCLUDEDIR = /opt/homebrew/include
 +# LIBDIR     = /opt/homebrew/lib
 +
-+INCLUDEDIR = /opt/homebrew/Cellar/gmp/6.3.0/include
-+LIBDIR     = /opt/homebrew/Cellar/gmp/6.3.0/lib
++ INCLUDEDIR = /homeless-shelter/opt/homebrew/Cellar/gmp/6.3.0/include
++ LIBDIR     = /homeless-shelter/opt/homebrew/Cellar/gmp/6.3.0/lib
 +
  
  CFLAGS     ?= -O3 -Wall
@@ -157,8 +157,8 @@ index 32e6b52..8b7d89b 100644
 -	$(CC) ${CFLAGS} -DGMP -DMA lrsnash.c  lrsnashlib.c -I${INCLUDEDIR} -o $@ -L . -llrs -lgmp
 +lrsnash-shared$(EXEEXT): ${SHLINK}  lrsnash.c
 +	$(CC) ${CFLAGS} -DGMP -DMA lrsnash.c  lrsnashlib.c -I${INCLUDEDIR} -o $@ -L . -llrs -lgmp -static-libgcc
-+lrs-static$(EXEEXT): ${STATICLIBLINK} lrs-static.o
-+	$(CC) $^ -o $@ -L . -llrs -lgmp
++lrs-static$(EXEEXT): lrs-static.o ${STATICLIBLINK}
++	$(CC) lrs-static.o -o $@ -L . -llrs -lgmp
 +lrsnash-static$(EXEEXT): ${STATICLIBLINK}  lrsnash.c
 +	$(CC) ${CFLAGS} -DGMP -DMA lrsnash.c  lrsnashlib.c -I${INCLUDEDIR} -o $@ -L . -llrs -lgmp -static-libgcc
  

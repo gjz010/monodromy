@@ -8,8 +8,34 @@ on:
   workflow_dispatch:
 
 jobs:
+  build_darwin_lrs:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v16
+
+      - name: Setup Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Build macOS vendored lrs
+        run: make vendor_lrs_darwin
+
+      - name: Package macOS vendored lrs
+        run: tar -czf darwin-lrslib.tar.gz -C src/monodromy/vendor/lrslib/bin darwin
+
+      - name: Upload macOS vendored lrs
+        uses: actions/upload-artifact@v4
+        with:
+          name: darwin-lrslib
+          path: darwin-lrslib.tar.gz
+
   build:
     runs-on: ubuntu-latest
+    needs: build_darwin_lrs
 
     permissions:
       contents: write
@@ -25,8 +51,22 @@ jobs:
       - name: Setup Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@v8
 
+      - name: Download macOS vendored lrs
+        uses: actions/download-artifact@v4
+        with:
+          name: darwin-lrslib
+
+      - name: Install macOS vendored lrs into source tree
+        run: tar -xzf darwin-lrslib.tar.gz -C src/monodromy/vendor/lrslib/bin
+
       - name: Build Wheel
         run: make wheel_devenv
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-dist
+          path: dist/*.whl
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2

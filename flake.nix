@@ -55,6 +55,11 @@
             packages.lrs_071b_mingw = pkgs.pkgsCross.mingwW64.lrs_071b;
             packages.lrs = config.packages.lrs_071b;
             packages.lrs_mingw = config.packages.lrs_071b_mingw;
+            packages.lrs_071b_darwin_x86 =
+              (import inputs.nixpkgs {
+                system = "x86_64-darwin";
+                overlays = [ self.overlays.default ];
+              }).pkgsStatic.lrs_071b;
 
             devenv.shells.default = {
 
